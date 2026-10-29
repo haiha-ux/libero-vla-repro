@@ -1,0 +1,10 @@
+.venv/
+ckpt/
+.libero_cfg/
+__pycache__/
+.pytest_cache/
+*.mp4
+!docs/*.mp4
+logs/*/videos/
+.venv*/
+logs/

@@ -1,0 +1,58 @@
+{
+ "per_task": {
+  "0": {
+   "successes": 10,
+   "episodes": 10
+  },
+  "1": {
+   "successes": 6,
+   "episodes": 10
+  },
+  "2": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "3": {
+   "successes": 9,
+   "episodes": 10
+  },
+  "4": {
+   "successes": 4,
+   "episodes": 10
+  },
+  "5": {
+   "successes": 0,
+   "episodes": 10
+  },
+  "6": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "7": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "8": {
+   "successes": 4,
+   "episodes": 10
+  },
+  "9": {
+   "successes": 9,
+   "episodes": 10
+  }
+ },
+ "successes": 63,
+ "episodes": 100,
+ "success_rate": 0.63,
+ "ci95": [
+  0.5322034757513312,
+  0.7181778743049083
+ ],
+ "name": "smolvla_lerobot_ckpt_libero_spatial",
+ "chunk_latency_s": {
+  "n_calls": 391,
+  "mean_s": 0.09092685489743953,
+  "median_s": 0.08922236650005289,
+  "p95_s": 0.09873270600019168
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "per_task": {
+  "0": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "1": {
+   "successes": 9,
+   "episodes": 10
+  },
+  "2": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "3": {
+   "successes": 4,
+   "episodes": 10
+  },
+  "4": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "5": {
+   "successes": 4,
+   "episodes": 10
+  },
+  "6": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "7": {
+   "successes": 8,
+   "episodes": 10
+  },
+  "8": {
+   "successes": 7,
+   "episodes": 10
+  },
+  "9": {
+   "successes": 6,
+   "episodes": 10
+  }
+ },
+ "successes": 66,
+ "episodes": 100,
+ "success_rate": 0.66,
+ "ci95": [
+  0.5627754565831095,
+  0.74538620502457
+ ],
+ "name": "smolvla_libero_spatial",
+ "chunk_latency_s": {
+  "n_calls": 16536,
+  "mean_s": 0.15763621875784795,
+  "median_s": 0.15733285200076352,
+  "p95_s": 0.16622370999994018
+ }
+}
