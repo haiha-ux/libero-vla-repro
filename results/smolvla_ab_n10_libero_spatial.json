@@ -1,0 +1,26 @@
+{
+ "per_task": {
+  "3": {
+   "successes": 5,
+   "episodes": 10
+  },
+  "5": {
+   "successes": 4,
+   "episodes": 10
+  }
+ },
+ "successes": 9,
+ "episodes": 20,
+ "success_rate": 0.45,
+ "ci95": [
+  0.25819502085709295,
+  0.6579179916924003
+ ],
+ "name": "smolvla_ab_n10_libero_spatial",
+ "chunk_latency_s": {
+  "n_calls": 389,
+  "mean_s": 0.2382058173324667,
+  "median_s": 0.17618548450082017,
+  "p95_s": 0.35402086400063126
+ }
+}

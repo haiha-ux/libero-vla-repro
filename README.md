@@ -13,12 +13,15 @@ With 100 episodes the 95% Wilson interval is about +/-9 points, so differences o
 |---|---|---|---|---|---|
 | SmolVLA 0.45B (`HuggingFaceVLA/smolvla_libero`, rev `6721902`) | flow matching, 50-step continuous chunk | **66/100 = 66.0%** | 56.3-74.5 | 90% (10 trials/task) | SmolVLA paper, arXiv 2506.01844, Table 2 |
 | SmolVLA 0.45B (`lerobot/smolvla_libero`, rev `a24f1f3`) | same | **63/100 = 63.0%** | 53.2-71.8 | no number on model card | (paper number above is for the authors' own run) |
-| pi0-FAST (`lerobot/pi0fast-libero-v044`, rev `2bb8d55`) | FAST: DCT + BPE tokens, autoregressive | PI0FAST_RESULT | PI0FAST_CI | 82.5% averaged over all 4 suites (no per-suite figure) | model card of the checkpoint |
+| pi0-FAST (`lerobot/pi0fast-libero-v044`, rev `2bb8d55`) | FAST: DCT + BPE tokens, autoregressive | **79/100 = 79.0%** | 70.0-85.8 | 82.5% averaged over all 4 suites (no per-suite figure) | model card of the checkpoint |
 
 Per-task successes (out of 10) are in `results/*.json`; summary in `results/summary.csv`.
 
 SmolVLA is about 24-27 points below its paper's LIBERO-Spatial number, outside the CI. I did not reproduce the
-published SmolVLA figure. See "Gap vs published" below. The pi0-FAST published figure is an average over four
+published SmolVLA figure. pi0-FAST scored 79% on Spatial against an 82.5% four-suite average (the per-suite
+figures for this lerobot port are not published; I did not run the other three suites), so it is consistent with
+the card but that is a weak check. On this single suite pi0-FAST is 13 points above SmolVLA (66%); the CIs
+(70.0-85.8 vs 56.3-74.5) barely overlap, one seed. See "Gap vs published" below. The pi0-FAST published figure is an average over four
 suites, so it is not a like-for-like comparison with a single-suite measurement.
 
 ### Inference latency (measured, shared machine, nice 19, one eval at a time)
@@ -30,7 +33,7 @@ nothing from the simulator. Measured inside the real eval run (`scripts/eval_tim
 |---|---|---|---|---|
 | SmolVLA (`HuggingFaceVLA`, `n_action_steps=1`) | 0.157 s | 0.166 s | 16536 | 1 (re-plans every control step; predicts 50) |
 | SmolVLA (`lerobot/smolvla_libero`, `n_action_steps=50`) | 0.089 s | 0.099 s | 391 | 50 (open loop) |
-| pi0-FAST (`n_action_steps=10`) | PI0FAST_LAT | | | 10 |
+| pi0-FAST (`n_action_steps=10`, early stop on `|`) | 1.454 s | 1.840 s | 1573 | 10 |
 
 SmolVLA latency is 10 Euler denoising steps over a 50-step chunk. The 0.157 vs 0.089 s difference between the
 two SmolVLA runs was not investigated (different library versions of the same model class and machine load
@@ -123,14 +126,18 @@ Not diagnosed. Candidate causes, as hypotheses only:
    the training dataset (`physical-intelligence/libero` derived) and lerobot's simulator observations.
 4. **Environment version**: lerobot 0.6.1's LIBERO wrapper (control mode `relative`, observation keys, state layout)
    vs the code used for the paper.
-5. **Episode budget**: 280 steps here; original LIBERO uses a per-suite limit (220 for Spatial) so that is not a
-   handicap here, but task 5 scoring 0/10 and 4/10 for tasks 4 and 8 hints at specific tasks failing systematically
-   rather than uniform noise.
+5. **Episode budget**: 280 steps here (lerobot's setting); I believe the original LIBERO/openpi limit for Spatial is
+   220, so a longer budget should not be a handicap. Task index 5 is the weakest in all three runs (0/10, 4/10 and
+   1/10 for SmolVLA-lerobot, SmolVLA-HuggingFaceVLA and pi0-FAST), which suggests a task-specific failure (e.g.
+   a hard layout or an ambiguous instruction) rather than uniform noise.
 6. **Seeds / init states**: one seed; the paper's seed protocol is not stated. This cannot explain a 24-point gap with
    a +/-9 CI.
 7. **Library drift** in transformers/SmolVLM2 weights between the paper date and now.
 
-AB_RESULT
+**One cheap A/B that I ran** (`results/raw/smolvla_ab_n10_tasks3_5.eval_info.json`): `HuggingFaceVLA/smolvla_libero` with
+`--policy.n_action_steps=10` instead of 1, tasks 3 and 5 only, 10 episodes each, same seed. Baseline (n=1) was 4/10 and
+4/10; with n=10 it was 5/10 and 4/10. No visible effect (CIs about +/-30 points at n=10 per task), so chunk length is not
+a strong lever for this gap, but this is a tiny test and does not rule it out. Median call latency 0.176 s.
 
 ## How the two policies work (from the code and configs; not re-measured unless stated)
 
@@ -175,4 +182,4 @@ Tradeoffs, as I understand them from the code and papers (not experiments of min
 - `scripts/eval_timed.py` wraps `lerobot-eval` and records per-chunk latency; `scripts/run_*.sh` are the exact commands.
 - `scripts/summarize.py` builds `results/*.json` and `results/summary.csv` from `eval_info.json` (with Wilson CIs);
   `tests/test_summarize.py` checks it.
-- `results/` per-task successes and timings; `docs/` rollout GIFs; `logs/` raw eval output (gitignored except summaries).
+- `results/` per-task successes and timings; `docs/` rollout GIFs (`smolvla_spatial_task0_ep0.gif`: success; `pi0fast_spatial_task4_ep0.gif`; low-res, episode chosen as the first of the task, not selected for outcome beyond that); `logs/` raw eval output (gitignored except summaries).

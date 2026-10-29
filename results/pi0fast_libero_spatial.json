@@ -1,0 +1,58 @@
+{
+ "per_task": {
+  "0": {
+   "successes": 5,
+   "episodes": 10
+  },
+  "1": {
+   "successes": 9,
+   "episodes": 10
+  },
+  "2": {
+   "successes": 8,
+   "episodes": 10
+  },
+  "3": {
+   "successes": 9,
+   "episodes": 10
+  },
+  "4": {
+   "successes": 10,
+   "episodes": 10
+  },
+  "5": {
+   "successes": 1,
+   "episodes": 10
+  },
+  "6": {
+   "successes": 10,
+   "episodes": 10
+  },
+  "7": {
+   "successes": 9,
+   "episodes": 10
+  },
+  "8": {
+   "successes": 9,
+   "episodes": 10
+  },
+  "9": {
+   "successes": 9,
+   "episodes": 10
+  }
+ },
+ "successes": 79,
+ "episodes": 100,
+ "success_rate": 0.79,
+ "ci95": [
+  0.7001985069803768,
+  0.8583445046835422
+ ],
+ "name": "pi0fast_libero_spatial",
+ "chunk_latency_s": {
+  "n_calls": 1573,
+  "mean_s": 1.4516515084930015,
+  "median_s": 1.454069134500969,
+  "p95_s": 1.8400619690000894
+ }
+}

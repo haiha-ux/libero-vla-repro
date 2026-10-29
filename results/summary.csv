@@ -1,3 +1,5 @@
 run,successes,episodes,success_pct,ci95_lo,ci95_hi,chunk_calls,chunk_latency_median_s
 smolvla_libero_spatial,66,100,66.0,56.3,74.5,16536,0.157
 smolvla_lerobot_ckpt_libero_spatial,63,100,63.0,53.2,71.8,391,0.089
+pi0fast_libero_spatial,79,100,79.0,70.0,85.8,1573,1.454
+smolvla_ab_n10_libero_spatial,9,20,45.0,25.8,65.8,389,0.176
