@@ -5,6 +5,10 @@ run through LeRobot's built-in LIBERO evaluator (`lerobot-eval --env.type=libero
 Everything below was measured on one shared aarch64 machine (NVIDIA GB10, unified memory) unless marked
 "not measured".
 
+| SmolVLA (flow matching) | pi0-FAST (tokenized actions) |
+|---|---|
+| ![SmolVLA rollout](docs/smolvla_spatial_task0_ep0.gif) | ![pi0-FAST rollout](docs/pi0fast_spatial_task4_ep0.gif) |
+
 ## Results (LIBERO-Spatial, 10 tasks x 10 episodes = 100 episodes, seed 1000)
 
 With 100 episodes the 95% Wilson interval is about +/-9 points, so differences of a few points are not meaningful.
