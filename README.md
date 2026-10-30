@@ -103,16 +103,16 @@ Environment: Linux aarch64, torch 2.11.0+cu130, `MUJOCO_GL=egl`, MuJoCo 3.8.1, h
 
 ## Deviations from the checkpoints' stock setup (all affect reproducibility claims)
 
-1. **Gated tokenizer.** The checkpoint references `google/paligemma-3b-pt-224`, which needs a gated HF login. I used
+1. Gated tokenizer. The checkpoint references `google/paligemma-3b-pt-224`, which needs a gated HF login. I used
    the tokenizer files of the ungated mirror `nnh-pbbb/paligemma-3b-pt-224`. I could not compare them file-by-file with
    the gated originals; the model emits well-formed `Action:` token sequences with them, which suggests the vocabulary
    matches, but it is a possible source of error.
-2. **`AutoProcessor` workaround** (`scripts/eval_timed.py`): with transformers 5.5.4 (lerobot 0.6.1 env) the FAST action
+2. `AutoProcessor` workaround (`scripts/eval_timed.py`): with transformers 5.5.4 (lerobot 0.6.1 env) the FAST action
    processor failed to load from its repo. That is why I first tried 0.4.4's transformers; the same `AutoProcessor`
    monkeypatch builds `UniversalActionProcessor` by hand from the pinned repo files and is kept in the wrapper (harmless
    in the 0.4.4 env). The FAST processor code is from `jadechoghari/fast-libero-tokenizer-mean-std` (DCT, scale 10,
    BPE vocab 1024, horizon 10, action dim 7); I read it before running it.
-3. **Early stop on `|`** for pi0-FAST decoding (speed only, output-identical by reading `detokenize_actions`, which
+3. Early stop on `|` for pi0-FAST decoding (speed only, output-identical by reading `detokenize_actions`, which
    discards everything after the first `|`). `EARLY_STOP=0` disables it. I did not run a bitwise A/B of actions.
 4. `--rename_map` was needed to map the env camera keys to each policy's camera names.
 5. Single seed (1000), `init_states=True` (LIBERO fixed initial states), hard resets (lerobot default).
@@ -121,24 +121,24 @@ Environment: Linux aarch64, torch 2.11.0+cu130, `MUJOCO_GL=egl`, MuJoCo 3.8.1, h
 
 Not diagnosed. Candidate causes, as hypotheses only:
 
-1. **Different checkpoints / training recipe.** The paper's 90% is from the authors' own training run. Neither Hub
+1. Different checkpoints or training recipe. The paper's 90% is from the authors' own training run. Neither Hub
    checkpoint has a model card number, and `lerobot/smolvla_libero`'s `train_config.json` shows 25k steps at batch 32,
    which may be far less than the paper's schedule. (The `HuggingFaceVLA` checkpoint's training config was not checked.)
-2. **Chunk execution.** The paper does not state `n_action_steps` for LIBERO. The two checkpoints ship with 1 and 50;
+2. Chunk execution. The paper does not state `n_action_steps` for LIBERO. The two checkpoints ship with 1 and 50;
    they scored similarly (66 vs 63), so this alone is not obviously the cause, but 10 or 5 was not tried.
-3. **Image preprocessing**: resize with padding to 512x512, camera naming/order, any 180-degree flip convention between
+3. Image preprocessing: resize with padding to 512x512, camera naming/order, any 180-degree flip convention between
    the training dataset (`physical-intelligence/libero` derived) and lerobot's simulator observations.
-4. **Environment version**: lerobot 0.6.1's LIBERO wrapper (control mode `relative`, observation keys, state layout)
+4. Environment version: lerobot 0.6.1's LIBERO wrapper (control mode `relative`, observation keys, state layout)
    vs the code used for the paper.
-5. **Episode budget**: 280 steps here (lerobot's setting); I believe the original LIBERO/openpi limit for Spatial is
+5. Episode budget: 280 steps here (lerobot's setting); I believe the original LIBERO/openpi limit for Spatial is
    220, so a longer budget should not be a handicap. Task index 5 is the weakest in all three runs (0/10, 4/10 and
    1/10 for SmolVLA-lerobot, SmolVLA-HuggingFaceVLA and pi0-FAST), which suggests a task-specific failure (e.g.
    a hard layout or an ambiguous instruction) rather than uniform noise.
-6. **Seeds / init states**: one seed; the paper's seed protocol is not stated. This cannot explain a 24-point gap with
+6. Seeds and init states: one seed; the paper's seed protocol is not stated. This cannot explain a 24-point gap with
    a +/-9 CI.
-7. **Library drift** in transformers/SmolVLM2 weights between the paper date and now.
+7. Library drift in transformers/SmolVLM2 weights between the paper date and now.
 
-**One cheap A/B that I ran** (`results/raw/smolvla_ab_n10_tasks3_5.eval_info.json`): `HuggingFaceVLA/smolvla_libero` with
+I ran one cheap A/B (`results/raw/smolvla_ab_n10_tasks3_5.eval_info.json`): `HuggingFaceVLA/smolvla_libero` with
 `--policy.n_action_steps=10` instead of 1, tasks 3 and 5 only, 10 episodes each, same seed. Baseline (n=1) was 4/10 and
 4/10; with n=10 it was 5/10 and 4/10. No visible effect (CIs about +/-30 points at n=10 per task), so chunk length is not
 a strong lever for this gap, but this is a tiny test and does not rule it out. Median call latency 0.176 s.
@@ -156,7 +156,7 @@ a strong lever for this gap, but this is a tiny test and does not rule it out. M
 | Loss | flow-matching regression | next-token cross entropy |
 | Executed per call | 1 or 50 of 50 (checkpoint dependent) | 10 of 10 |
 
-Tradeoffs, as I understand them from the code and papers (not experiments of mine except where numbers are given):
+Trade-offs, as I understand them from the code and papers (not experiments of mine except where numbers are given):
 
 - Flow matching produces a whole continuous chunk in a fixed, small number of forward passes through a small expert, so
   latency is constant (0.09-0.16 s here) and independent of the action values. Quantisation error is absent, but a
@@ -171,14 +171,14 @@ Tradeoffs, as I understand them from the code and papers (not experiments of min
 
 ## Modification experiments I would run next (not run)
 
-1. **Chunk-execution sweep on SmolVLA**: `n_action_steps` in {1, 5, 10, 25, 50} on 3 fixed tasks (including task 5, which
+1. Chunk-execution sweep on SmolVLA: `n_action_steps` in {1, 5, 10, 25, 50} on 3 fixed tasks (including task 5, which
    fails 0/10 and 4/10), 20 episodes each; isolates open-loop drift from per-task failure.
-2. **Denoising steps / noise**: SmolVLA `num_steps` in {2, 5, 10, 20} to see whether the 0.09 s latency can be halved at
+2. Denoising steps and noise: SmolVLA `num_steps` in {2, 5, 10, 20} to see whether the 0.09 s latency can be halved at
    equal success, and whether sampling noise explains part of the variance (fixed noise seed vs fresh).
-3. **FAST decoding**: temperature 0 vs small sampling, and truncating `max_decoding_steps` to measure the
+3. FAST decoding: temperature 0 vs small sampling, and truncating `max_decoding_steps` to measure the
    latency/success curve; also swap the 256-bin state-in-prompt for no state to measure how much the model uses
    proprioception.
-4. **Same-backbone ablation** (needs training; out of scope here): train both heads on one VLM to separate "action
+4. Same-backbone ablation (needs training; out of scope here): train both heads on one VLM to separate "action
    representation" from "backbone".
 
 ## Layout
