@@ -46,7 +46,7 @@ two SmolVLA runs was not investigated (different library versions of the same mo
 differ; not measured separately).
 pi0-FAST decodes autoregressively; lerobot decodes a fixed 256 tokens. I stop decoding at the end-of-action
 token `|` (see "Deviations"). Unmodified decoder: 7.9 s per chunk (1 smoke episode, 28 calls, measured; raw file not kept), with the early stop
-the same machine runs about 8 control steps/s.
+the same machine runs about 7 control steps/s.
 
 ## Reproduce
 
